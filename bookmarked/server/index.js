@@ -15,18 +15,29 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const OPEN_LIBRARY_BASE_URL = 'https://openlibrary.org/search.json';
 
+// Frontend origins allowed to make credentialed requests
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL_2,
+  'https://bookmarked-henna.vercel.app',
+  'https://bookmarked-fawn.vercel.app'
+].filter(Boolean);
+
 // Database Connection 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected')) 
   .catch(err => console.error('Connection error:', err));
 
 // Middleware Configuration 
+app.set('trust proxy', 1); // required for secure cookies behind a proxy
+
 app.use(cors({
-  origin: [
-    'https://bookmarked-henna.vercel.app'
-  ], 
-  credentials: true,  
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, origin);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
