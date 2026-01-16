@@ -40,13 +40,24 @@ router.post('/create-profile', async (req, res) => {
 
   try {
     const { nickname } = req.body;
+
+    if (!nickname || typeof nickname !== 'string' || !nickname.trim()) {
+      return res.status(400).json({ error: "Nickname is required" });
+    }
+
+    // If the user already exists (race / double submit), just return it
+    const existing = await User.findOne({ googleId: req.user.googleId });
+    if (existing) {
+      return res.json({ success: true, user: existing, note: 'Existing user reused' });
+    }
+
     // creates a new document in the MongoDB collection with the provided nickname
     const newUser = await User.create({
       googleId: req.user.googleId,
       email: req.user.email,
       avatar: req.user.avatar, 
-      nickname: nickname,      
-      displayName: nickname    
+      nickname: nickname.trim(),
+      displayName: nickname.trim()
     });
 
     // establishes a persistent login session for the newly created User
@@ -56,7 +67,10 @@ router.post('/create-profile', async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ error: "Could not create account" });
+    if (err && err.code === 11000) {
+      return res.status(409).json({ error: "Account already exists" });
+    }
+    res.status(500).json({ error: "Could not create account", detail: err.message });
   }
 });
 
