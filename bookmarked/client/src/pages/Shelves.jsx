@@ -41,19 +41,39 @@ const Shelves = ({ triggerAlert }) => {
   const defaultShelves = ["Currently Reading", "Want to Read", "Read"];
 
   useEffect(() => {
+    // Capture token from URL if present (from OAuth redirect)
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    if (token && !localStorage.getItem('authToken')) {
+      console.log('[Shelves] Token found in URL, storing in localStorage');
+      localStorage.setItem('authToken', token);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
     checkAuthAndFetch();
   }, []);
 
   // verifies user session and retrieves all saved books from the database
   const checkAuthAndFetch = async () => {
     try {
-      const userRes = await fetch(`${API_BASE_URL}/auth/user`, { credentials: 'include' });
+      const headers = {};
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const userRes = await fetch(`${API_BASE_URL}/auth/user`, { 
+        credentials: 'include',
+        headers
+      });
       
       if (userRes.ok) {
         const userData = await userRes.json();
         if (userData && userData.email) {
           setUser(userData);
-          const bookRes = await fetch(`${API_BASE_URL}/api/bookshelf`, { credentials: 'include' });
+          const bookRes = await fetch(`${API_BASE_URL}/api/bookshelf`, { 
+            credentials: 'include',
+            headers
+          });
           const bookData = await bookRes.json();
           setBooks(Array.isArray(bookData) ? bookData : []);
         } else {
@@ -75,7 +95,16 @@ const Shelves = ({ triggerAlert }) => {
 
     triggerAlert(`Remove "${editingBook.title}" from your library?`, async () => {
         try {
-          await fetch(`${API_BASE_URL}/api/bookshelf/${editingBook._id}`, { method: 'DELETE', credentials: 'include' });
+          const headers = {};
+          const token = localStorage.getItem('authToken');
+          if (token) {
+            headers.Authorization = `Bearer ${token}`;
+          }
+          await fetch(`${API_BASE_URL}/api/bookshelf/${editingBook._id}`, { 
+            method: 'DELETE', 
+            credentials: 'include',
+            headers
+          });
           setBooks(books.filter(b => b._id !== editingBook._id));
           setIsModalOpen(false); 
         } catch (err) { }
@@ -99,9 +128,14 @@ const Shelves = ({ triggerAlert }) => {
     setBooks(updatedBooks);
     setEditingBook({ ...editingBook, isTopPick: newStatus });
     try {
+      const headers = { 'Content-Type': 'application/json' };
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
       await fetch(`${API_BASE_URL}/api/bookshelf/${editingBook._id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ isTopPick: newStatus }),
         credentials: 'include'
       });
@@ -124,10 +158,15 @@ const Shelves = ({ triggerAlert }) => {
         b._id === editingBook._id ? { ...b, shelf: finalShelfName } : b
       );
       setBooks(updatedBooks);
-      setIsModalOpen(false); 
+      setIsModalOpen(false);
+      const headers = { 'Content-Type': 'application/json' };
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
       await fetch(`${API_BASE_URL}/api/bookshelf/${editingBook._id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ shelf: finalShelfName }),
         credentials: 'include'
       });
@@ -140,6 +179,11 @@ const Shelves = ({ triggerAlert }) => {
     
     triggerAlert(confirmMessage, async () => {
         try {
+          const headers = { 'Content-Type': 'application/json' };
+          const token = localStorage.getItem('authToken');
+          if (token) {
+            headers.Authorization = `Bearer ${token}`;
+          }
           const booksInShelf = books.filter(b => b.shelf === targetShelf);
           const updatedBooks = books.map(b => 
             b.shelf === targetShelf ? { ...b, shelf: "Want to Read" } : b
@@ -149,7 +193,7 @@ const Shelves = ({ triggerAlert }) => {
           await Promise.all(booksInShelf.map(book => 
             fetch(`${API_BASE_URL}/api/bookshelf/${book._id}`, {
               method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
+              headers,
               body: JSON.stringify({ shelf: "Want to Read" }),
               credentials: 'include'
             })
@@ -168,6 +212,11 @@ const Shelves = ({ triggerAlert }) => {
     }
     if (newShelfName === targetShelf) return setIsShelfModalOpen(false); 
     try {
+      const headers = { 'Content-Type': 'application/json' };
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
       const booksInShelf = books.filter(b => b.shelf === targetShelf);
       const updatedBooks = books.map(b => 
         b.shelf === targetShelf ? { ...b, shelf: newShelfName.trim() } : b
@@ -177,7 +226,7 @@ const Shelves = ({ triggerAlert }) => {
       await Promise.all(booksInShelf.map(book => 
         fetch(`${API_BASE_URL}/api/bookshelf/${book._id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify({ shelf: newShelfName.trim() }),
           credentials: 'include'
         })
