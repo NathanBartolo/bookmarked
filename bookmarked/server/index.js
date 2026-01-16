@@ -47,6 +47,11 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Health Check Route
+app.get('/health', (req, res) => {
+  res.json({ status: 'Server is running' });
+});
+
 // Route Handlers
 app.use('/auth', authRoutes);
 app.use('/api/bookshelf', bookshelfRoute);
