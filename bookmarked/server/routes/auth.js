@@ -1,7 +1,29 @@
 const express = require('express');
 const passport = require('passport');
+const crypto = require('crypto');
 const router = express.Router();
-const User = require('../models/Users.js'); 
+const User = require('../models/Users.js');
+
+const TOKEN_SECRET = process.env.SESSION_SECRET || 'change-me';
+
+// Simple HMAC token for mobile (bypasses third-party cookie blocks)
+const signToken = (payload) => {
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const sig = crypto.createHmac('sha256', TOKEN_SECRET).update(body).digest('base64url');
+  return `${body}.${sig}`;
+};
+
+const verifyToken = (token) => {
+  if (!token || !token.includes('.')) return null;
+  const [body, sig] = token.split('.');
+  const expected = crypto.createHmac('sha256', TOKEN_SECRET).update(body).digest('base64url');
+  if (sig !== expected) return null;
+  try {
+    return JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
+  } catch (e) {
+    return null;
+  }
+}; 
 
 // Google Authentication
 // triggers the Google login flow to begin the authentication process
@@ -21,9 +43,16 @@ router.get('/google/callback',
   (req, res) => {
     // determine the next step based on the User registration status
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const token = signToken({
+      isNew: req.user.isNew || false,
+      googleId: req.user.googleId,
+      email: req.user.email,
+      avatar: req.user.avatar,
+      id: req.user._id || null
+    });
     const target = req.user.isNew
-      ? `${frontendUrl}/create-profile`
-      : `${frontendUrl}/dashboard`;
+      ? `${frontendUrl}/create-profile?token=${token}`
+      : `${frontendUrl}/dashboard?token=${token}`;
 
     // ensure session is persisted before redirecting (mobile can be sensitive to races)
     req.session.save(() => {
@@ -164,3 +193,5 @@ router.put('/update-profile', async (req, res) => {
 });
 
 module.exports = router;
+module.exports.verifyToken = verifyToken;
+module.exports.signToken = signToken;

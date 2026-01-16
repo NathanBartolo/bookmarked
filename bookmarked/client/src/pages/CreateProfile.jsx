@@ -23,10 +23,16 @@ const CreateProfile = () => {
     setError('');
 
     try {
+      const headers = { withCredentials: true };
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await axios.post(
         `${API_BASE_URL}/auth/create-profile`,
         { nickname: nickname },
-        { withCredentials: true }
+        { ...headers }
       );
 
       // if successful (including existing user reuse), move the user into their dashboard

@@ -8,7 +8,8 @@ require('dotenv').config();
 // Route and Config Imports
 const bookshelfRoute = require('./routes/bookshelf');
 const authRoutes = require('./routes/auth');
-const adminRoutes = require('./routes/admin'); 
+const adminRoutes = require('./routes/admin');
+const { verifyToken } = require('./routes/auth'); // Import token verifier
 require('./config/passport'); 
 
 const app = express();
@@ -66,6 +67,29 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Bearer token middleware: if session auth fails, try Authorization header
+app.use((req, res, next) => {
+  if (!req.user && req.headers.authorization) {
+    const authHeader = req.headers.authorization;
+    if (authHeader.startsWith('Bearer ')) {
+      const token = authHeader.slice(7);
+      try {
+        const payload = verifyToken(token);
+        req.user = {
+          _id: payload.id,
+          googleId: payload.googleId,
+          email: payload.email,
+          avatar: payload.avatar
+        };
+      } catch (err) {
+        // Token invalid; continue without user
+        console.log('Token verification failed:', err.message);
+      }
+    }
+  }
+  next();
+});
 
 // Health Check Route
 app.get('/health', (req, res) => {

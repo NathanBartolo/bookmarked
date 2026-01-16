@@ -50,7 +50,13 @@ const Dashboard = ({ triggerAlert }) => {
   // pulls the authenticated user profile and their full library from the backend
   const fetchData = async () => {
     try {
-      const userRes = await axios.get(`${API_BASE_URL}/auth/user`, { withCredentials: true });
+      const headers = { withCredentials: true };
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const userRes = await axios.get(`${API_BASE_URL}/auth/user`, { headers });
       if (userRes.data && userRes.data.email) {
         setUser(userRes.data);
         setProfileForm({
@@ -62,7 +68,7 @@ const Dashboard = ({ triggerAlert }) => {
       } else {
         setUser(null);
       }
-      const bookRes = await axios.get(`${API_BASE_URL}/api/bookshelf`, { withCredentials: true });
+      const bookRes = await axios.get(`${API_BASE_URL}/api/bookshelf`, { headers });
       setBooks(bookRes.data);
     } catch (err) {
       setUser(null); 
@@ -74,7 +80,12 @@ const Dashboard = ({ triggerAlert }) => {
   // submits updated profile information to the database
   const handleSaveProfile = async () => {
     try {
-      const res = await axios.put(`${API_BASE_URL}/auth/update-profile`, profileForm, { withCredentials: true });
+      const headers = { withCredentials: true };
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      const res = await axios.put(`${API_BASE_URL}/auth/update-profile`, profileForm, { headers });
       setUser(res.data); 
       setIsProfileModalOpen(false);
       triggerAlert("Profile updated!");
@@ -88,7 +99,12 @@ const Dashboard = ({ triggerAlert }) => {
   const handleDeleteAccount = () => {
     triggerAlert("Are you sure? This will permanently delete your account and all your book data.", async () => {
       try {
-        await axios.delete(`${API_BASE_URL}/auth/delete-account`, { withCredentials: true });
+        const headers = { withCredentials: true };
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+        await axios.delete(`${API_BASE_URL}/auth/delete-account`, { headers });
         // Redirect to home after deletion
         window.location.href = "/";
       } catch (err) {
@@ -113,10 +129,15 @@ const Dashboard = ({ triggerAlert }) => {
   const handleSaveDiary = async () => {
     if (!editingEntry) return;
     try {
+      const headers = { withCredentials: true };
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
       const updatedBooks = books.map(b => b._id === editingEntry._id ? { ...b, ...diaryForm } : b);
       setBooks(updatedBooks);
       setIsDiaryModalOpen(false);
-      await axios.put(`${API_BASE_URL}/api/bookshelf/${editingEntry._id}`, diaryForm, { withCredentials: true });
+      await axios.put(`${API_BASE_URL}/api/bookshelf/${editingEntry._id}`, diaryForm, { headers });
       triggerAlert("Entry saved!");
     } catch (err) {
       fetchData(); 
@@ -128,11 +149,16 @@ const Dashboard = ({ triggerAlert }) => {
     if (!editingEntry) return;
     triggerAlert("Clear this diary entry? The book will remain on your shelf.", async () => {
         try {
+          const headers = { withCredentials: true };
+          const token = localStorage.getItem('authToken');
+          if (token) {
+            headers.Authorization = `Bearer ${token}`;
+          }
           const emptyData = { notes: "", quotes: "", rating: 0, dateRead: null };
           const updatedBooks = books.map(b => b._id === editingEntry._id ? { ...b, ...emptyData } : b);
           setBooks(updatedBooks);
           setIsDiaryModalOpen(false);
-          await axios.put(`${API_BASE_URL}/api/bookshelf/${editingEntry._id}`, emptyData, { withCredentials: true });
+          await axios.put(`${API_BASE_URL}/api/bookshelf/${editingEntry._id}`, emptyData, { headers });
           triggerAlert("Entry cleared.");
         } catch (err) {
           fetchData();

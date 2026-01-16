@@ -42,9 +42,25 @@ function App() {
   useEffect(() => {
     const getUser = async () => {
       try {
+        // Check if token is in URL (from OAuth redirect)
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        if (token) {
+          localStorage.setItem('authToken', token);
+          // Clean up URL without reloading
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        const headers = {};
+        const storedToken = localStorage.getItem('authToken');
+        if (storedToken) {
+          headers.Authorization = `Bearer ${storedToken}`;
+        }
+
         const response = await fetch(`${API_BASE_URL}/auth/user`, {
           method: "GET",
-          credentials: "include", 
+          credentials: "include",
+          headers
         });
 
         if (response.status === 200) {
