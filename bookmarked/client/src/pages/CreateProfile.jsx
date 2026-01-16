@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -13,6 +13,17 @@ const CreateProfile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // Capture token from URL on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    if (token && !localStorage.getItem('authToken')) {
+      console.log('[CreateProfile] Token found in URL, storing in localStorage');
+      localStorage.setItem('authToken', token);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   // handles the final onboarding step to save the user's nickname
   const handleSubmit = async (e) => {

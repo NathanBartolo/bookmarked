@@ -44,6 +44,14 @@ const Dashboard = ({ triggerAlert }) => {
 
   // fetch user data and bookshelf on component mount
   useEffect(() => {
+    // Capture token from URL if present (from OAuth redirect)
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    if (token && !localStorage.getItem('authToken')) {
+      console.log('[Dashboard] Token found in URL, storing in localStorage');
+      localStorage.setItem('authToken', token);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
     fetchData();
   }, []);
 
