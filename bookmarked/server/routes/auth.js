@@ -38,6 +38,11 @@ router.get('/google/callback',
 // verifies that a valid Google session exists before allowing profile creation
 router.post('/create-profile', async (req, res) => {
   if (!req.user || !req.user.googleId) {
+    console.warn('Create-profile blocked: missing user', {
+      sessionID: req.sessionID,
+      cookies: req.headers.cookie,
+      origin: req.headers.origin
+    });
     return res.status(401).json({ error: "Unauthorized. Please login with Google first." });
   }
 
@@ -121,6 +126,16 @@ router.get('/logout', (req, res, next) => {
 // sends the current user data stored in the request object back to React
 router.get('/user', (req, res) => {
   res.send(req.user || null);
+});
+
+// Session debug helper to inspect current session state and cookies
+router.get('/session-debug', (req, res) => {
+  res.json({
+    user: req.user || null,
+    sessionID: req.sessionID || null,
+    cookies: req.headers.cookie || null,
+    authHeader: req.headers.authorization || null
+  });
 });
 
 // Update Profile
