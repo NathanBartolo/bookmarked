@@ -23,17 +23,23 @@ const CreateProfile = () => {
     setError('');
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/create-profile`, 
-        { nickname: nickname }, 
-        { withCredentials: true } 
+      const response = await axios.post(
+        `${API_BASE_URL}/auth/create-profile`,
+        { nickname: nickname },
+        { withCredentials: true }
       );
 
-      // if successful, move the user into their personal dashboard
-      if (response.data.success) {
+      // if successful (including existing user reuse), move the user into their dashboard
+      if (response.data && response.data.success) {
         navigate('/dashboard');
+        return;
       }
+
+      // fallback if success flag missing
+      setError(response?.data?.error || "Could not create profile. Please try again.");
     } catch (err) {
-      setError("Could not create profile. The server might be busy. Please try again.");
+      const serverMessage = err?.response?.data?.error || err?.message;
+      setError(serverMessage || "Could not create profile. The server might be busy. Please try again.");
     } finally {
       setLoading(false);
     }
