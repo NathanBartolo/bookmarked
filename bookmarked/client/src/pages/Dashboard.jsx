@@ -190,7 +190,9 @@ const Dashboard = ({ triggerAlert }) => {
             <img className="scroll-rotating-image" src={RotatingImage} alt="Login Required" />
             <h2>Please Log In</h2>
             <p>You need to be logged in to view your dashboard.</p>
-            <button className="button bounce-button" onClick={() => window.location.href = `${API_BASE_URL}/auth/google`}></button>
+            <button className="button bounce-button" onClick={() => window.location.href = `${API_BASE_URL}/auth/google`}>
+                Login with Google
+            </button>
         </div>
       </div>
     );
