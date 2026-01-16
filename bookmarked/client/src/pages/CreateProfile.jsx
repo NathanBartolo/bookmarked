@@ -23,7 +23,7 @@ const CreateProfile = () => {
     setError('');
 
     try {
-      const headers = { withCredentials: true };
+      const headers = {};
       const token = localStorage.getItem('authToken');
       console.log('[CreateProfile] Token available:', token ? 'yes' : 'no');
       if (token) {
@@ -34,7 +34,7 @@ const CreateProfile = () => {
       const response = await axios.post(
         `${API_BASE_URL}/auth/create-profile`,
         { nickname: nickname },
-        { ...headers }
+        { headers, withCredentials: true }
       );
 
       console.log('[CreateProfile] Response status:', response.status);
