@@ -20,8 +20,14 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
   process.env.FRONTEND_URL_2,
   'https://bookmarked-henna.vercel.app',
-  'https://bookmarked-fawn.vercel.app'
+  'https://bookmarked-fawn.vercel.app',
+  'http://localhost:5173'
 ].filter(Boolean);
+
+// Allowlist patterns for Vercel preview domains, etc.
+const allowedOriginPatterns = [
+  /\.vercel\.app$/
+];
 
 // Database Connection 
 mongoose.connect(process.env.MONGO_URI)
@@ -34,6 +40,7 @@ app.set('trust proxy', 1); // required for secure cookies behind a proxy
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) return callback(null, origin);
+    if (allowedOriginPatterns.some((pattern) => pattern.test(origin))) return callback(null, origin);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
