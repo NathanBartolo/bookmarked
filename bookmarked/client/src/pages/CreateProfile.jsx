@@ -25,8 +25,10 @@ const CreateProfile = () => {
     try {
       const headers = { withCredentials: true };
       const token = localStorage.getItem('authToken');
+      console.log('[CreateProfile] Token available:', token ? 'yes' : 'no');
       if (token) {
         headers.Authorization = `Bearer ${token}`;
+        console.log('[CreateProfile] Sending Authorization header');
       }
 
       const response = await axios.post(
@@ -35,6 +37,7 @@ const CreateProfile = () => {
         { ...headers }
       );
 
+      console.log('[CreateProfile] Response status:', response.status);
       // if successful (including existing user reuse), move the user into their dashboard
       if (response.data && response.data.success) {
         navigate('/dashboard');
@@ -44,6 +47,7 @@ const CreateProfile = () => {
       // fallback if success flag missing
       setError(response?.data?.error || "Could not create profile. Please try again.");
     } catch (err) {
+      console.log('[CreateProfile] Error:', err.response?.status, err.response?.data?.error || err.message);
       const serverMessage = err?.response?.data?.error || err?.message;
       setError(serverMessage || "Could not create profile. The server might be busy. Please try again.");
     } finally {

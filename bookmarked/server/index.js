@@ -70,12 +70,14 @@ app.use(passport.session());
 
 // Bearer token middleware: if session auth fails, try Authorization header
 app.use((req, res, next) => {
+  console.log('[Bearer Middleware] Path:', req.path, 'Auth:', req.headers.authorization ? 'yes' : 'no', 'User:', req.user ? req.user.email : 'none');
   if (!req.user && req.headers.authorization) {
     const authHeader = req.headers.authorization;
     if (authHeader.startsWith('Bearer ')) {
       const token = authHeader.slice(7);
       try {
         const payload = verifyToken(token);
+        console.log('[Bearer] Token verified for:', payload.email);
         req.user = {
           _id: payload.id,
           googleId: payload.googleId,
@@ -83,8 +85,7 @@ app.use((req, res, next) => {
           avatar: payload.avatar
         };
       } catch (err) {
-        // Token invalid; continue without user
-        console.log('Token verification failed:', err.message);
+        console.log('[Bearer] Token verification failed:', err.message);
       }
     }
   }

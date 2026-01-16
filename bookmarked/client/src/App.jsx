@@ -46,6 +46,7 @@ function App() {
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
         if (token) {
+          console.log('[App] Token found in URL, storing in localStorage');
           localStorage.setItem('authToken', token);
           // Clean up URL without reloading
           window.history.replaceState({}, document.title, window.location.pathname);
@@ -54,6 +55,7 @@ function App() {
         const headers = {};
         const storedToken = localStorage.getItem('authToken');
         if (storedToken) {
+          console.log('[App] Using token from localStorage');
           headers.Authorization = `Bearer ${storedToken}`;
         }
 
@@ -63,12 +65,14 @@ function App() {
           headers
         });
 
+        console.log('[App] /auth/user response:', response.status);
         if (response.status === 200) {
           const data = await response.json();
+          console.log('[App] User data received:', data.email);
           setUser(data); 
         }
       } catch (err) {
-        // browsing as a guest
+        console.log('[App] Error fetching user:', err.message);
       }
     };
     getUser();
