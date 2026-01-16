@@ -108,11 +108,6 @@
   width: 100%;
 }
 
-.entry-cover {
-  min-width: 120px;
-  align-self: start;
-}
-
 .entry-title {
   font-family: 'Glacial Indifference Bold', sans-serif;
   height: fit-content;
