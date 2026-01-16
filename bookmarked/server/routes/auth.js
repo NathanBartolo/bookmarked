@@ -21,11 +21,14 @@ router.get('/google/callback',
   (req, res) => {
     // determine the next step based on the User registration status
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    if (req.user.isNew) {
-      res.redirect(`${frontendUrl}/create-profile`);
-    } else {
-      res.redirect(`${frontendUrl}/dashboard`);
-    }
+    const target = req.user.isNew
+      ? `${frontendUrl}/create-profile`
+      : `${frontendUrl}/dashboard`;
+
+    // ensure session is persisted before redirecting (mobile can be sensitive to races)
+    req.session.save(() => {
+      res.redirect(target);
+    });
   }
 );
 
