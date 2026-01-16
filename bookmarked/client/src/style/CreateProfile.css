@@ -1,0 +1,82 @@
+/* Animations */
+
+@keyframes floatUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Layout and Containers */
+
+.create-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh; 
+  width: 100%;
+}
+
+.create-card {
+  background-color: var(--text-white);
+  padding: 40px;
+  border-radius: 50px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 90%; 
+  max-width: 400px;
+  text-align: center;
+  animation: floatUp 0.8s ease-out forwards;
+}
+
+/* Typography and Form Elements */
+
+.create-heading {
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.create-inputs {
+  text-align: left;
+}
+
+.create-label {
+  color: var(--text-grey);
+  font-size: 20px;
+}
+
+.create-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--text-grey);
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box; 
+}
+
+/* Responsive Design */
+
+@media screen and (max-width: 450px) {
+  .create-heading {
+    font-size: 40px;
+  }
+
+  .create-label {
+    color: var(--text-grey);
+    font-size: 16px;
+  }
+
+  .create-input {
+    font-size: 12px;
+  }
+}

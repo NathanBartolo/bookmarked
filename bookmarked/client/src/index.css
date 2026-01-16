@@ -1,0 +1,201 @@
+/* Variables and Fonts */
+
+:root {
+  /* defines the global CSS variables for colors and spacing */
+  --background: #f8e1e6;
+  --admin-background: #f0f0f0;
+  --text-black: #000000;
+  --text-white: #ffffff;
+  --text-grey: #7a7a7ac7;
+
+  --primary-blue: #366baa;
+  --secondary-red: #a43030;
+  --secondary-yellow: #ebb75f;
+
+  margin: 0;
+  padding: 30px;
+}
+
+/* imports the custom fonts */
+@font-face {
+  font-family: 'Glacial Indifference';
+  src: url('./assets/fonts/glacial-regular.otf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Glacial Indifference Bold';
+  src: url('./assets/fonts/glacial-bold.otf');
+  font-style: bold;
+}
+
+@font-face {
+  font-family: 'New Icon';
+  src: url('./assets/fonts/new-icon.otf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Global Styles */
+
+body {
+  /* sets the base typography and fixed background for the whole site */
+  font-family: 'Glacial Indifference', Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  background-color: var(--background);
+  background-image: url('./assets/images/website-background.png');
+  background-repeat: repeat; 
+  background-size: 200px 200px; 
+  background-attachment: fixed; 
+  color: var(--primary-blue);
+}
+
+.container {
+  /* centers the main content across all pages */
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center; 
+}
+
+h1 {
+  font-family: 'New Icon';
+}
+
+h2 {
+  font-family: 'Glacial Indifference Bold', Arial, Helvetica, sans-serif;
+  line-height: 1;
+}
+
+.page-container {
+  /* provides consistent bottom spacing for page sections */
+  margin-bottom: 80px;
+}
+
+/* Common Components */
+
+.button {
+  font-family: 'Glacial Indifference', Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  display: inline-block;   
+  background-color: var(--primary-blue); 
+  color: var(--text-white);
+  text-decoration: none;      
+  padding: 8px 30px;     
+  border-radius: 50px;       
+  border: 2px solid var(--primary-blue);  
+  transition: all 0.3s ease; 
+}
+
+.button:hover {
+  background-color: var(--secondary-yellow);
+  color: var(--text-white);
+  transform: scale(1.1); 
+  border: 2px solid var(--secondary-yellow);  
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.221);  
+}
+
+/* Global Alert System */
+
+.alert-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    width: 100vw;
+    height: 100vh;
+    padding-bottom: 12vh; 
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.alert-box {
+  margin: 15px;
+  width: 90%;
+  max-width: 380px;
+  padding: 30px;
+  background: var(--text-white);
+  border-radius: 25px;
+  box-shadow: 0 10px 20px rgba(55, 55, 55, 0.15);
+  text-align: center;
+  animation: alertPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.alert-box p {
+  color: var(--primary-blue);
+  font-size: 1rem;
+}
+
+@keyframes alertPop {
+    from { opacity: 0; transform: scale(0.85); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Entry Splash Screen */
+
+.entry-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--primary-blue);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20000; 
+  cursor: pointer;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.entry-screen.exit-fade {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.entry-modal {
+  text-align: center;
+  color: var(--text-white);
+}
+
+.entry-text {
+  font-family: 'Glacial Indifference', sans-serif;
+  font-size: 16px;
+  margin-top: 20px;
+  animation: entryPulse 3s infinite;
+}
+
+.entry-image {
+  width: 100px;     
+  margin-bottom: 20px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  animation: spin 10s linear infinite; 
+}
+
+@keyframes entryPulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+
+@media screen and (max-width: 850px) {
+  :root {
+    padding: 10px;
+  }
+
+  .button {
+    font-size: 10px;
+    padding: 4px 20px;  
+  }
+}

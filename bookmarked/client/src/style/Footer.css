@@ -1,0 +1,79 @@
+/* Main Container */
+
+.footer {
+    text-align: center;
+    margin: 100px auto 50px;
+    padding: 50px 0;
+    border-radius: 50px;
+    background-color: var(--primary-blue);
+}
+
+/* Typography */
+
+.footer h3 {
+    color: var(--text-white);
+    font-family: 'New Icon';
+    font-size: clamp(25px, 8vw, 80px);
+    margin: 0 0 10px;
+}
+
+.footer p {
+    color: var(--text-white);
+    margin: 0;
+    font-size: clamp(8px, 1.5vw, 16px);
+    text-transform: uppercase;
+    text-align: center;
+}
+
+/* Images and Icons */
+
+.footer img {
+    width: 10vw;
+    margin: 20px 0 30px;
+}
+
+/* Navigation Links */
+
+.footer-links {
+    margin: 10px auto;
+    max-width: fit-content;
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-links a {
+    color: var(--text-white);
+    font-size: clamp(10px, 1.5vw, 16px);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: transform 0.3s ease;
+}
+
+.footer-links a:hover {
+    transform: scale(1.2);
+}
+
+/* Responsive Design */
+
+@media screen and (max-width: 850px) {
+    .footer {
+        margin: 20px auto;
+        padding: 25px 0;
+        border-radius: 60px;
+        background-color: var(--primary-blue);
+    }
+
+    .footer h3 {
+        margin: 10px 0 8px;
+    }
+
+    .footer-links {
+        margin: 0 auto;
+    }
+
+    .footer img {
+        width: 10vw;
+        margin: 15px;
+    }
+}
