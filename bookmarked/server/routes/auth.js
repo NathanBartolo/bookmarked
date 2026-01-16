@@ -146,6 +146,7 @@ router.get('/logout', (req, res, next) => {
     // clears the server session store and redirects to the landing page
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     req.session.destroy(() => {
+      res.clearCookie('connect.sid', { path: '/', sameSite: 'none', secure: true });
       res.redirect(`${frontendUrl}/`);
     });
   });

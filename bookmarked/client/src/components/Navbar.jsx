@@ -105,7 +105,10 @@ function Navbar({ user, loading }) {
               <div className="auth-dropdown-content">
                 <p className="dropdown-label">User: {user.nickname || user.displayName}</p>
                 {/* UPDATED: Used ${API_BASE_URL} for Logout */}
-                <button className="logout-button" onClick={() => window.location.href = `${API_BASE_URL}/auth/logout`}>
+                <button className="logout-button" onClick={() => {
+                  localStorage.removeItem('authToken');
+                  window.location.href = `${API_BASE_URL}/auth/logout`;
+                }}>
                   Logout
                 </button>
               </div>
