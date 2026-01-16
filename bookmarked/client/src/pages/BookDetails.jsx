@@ -56,7 +56,12 @@ function BookDetails({ triggerAlert }) {
 
         // Step 3: Check if this user already has this book saved to their account
         try {
-          const myBooksRes = await axios.get(`${API_BASE_URL}/api/bookshelf`, { withCredentials: true });
+          const headers = {};
+          const token = localStorage.getItem('authToken');
+          if (token) {
+            headers.Authorization = `Bearer ${token}`;
+          }
+          const myBooksRes = await axios.get(`${API_BASE_URL}/api/bookshelf`, { headers, withCredentials: true });
           const existingBook = myBooksRes.data.find(b => b.bookId === olid);
 
           if (existingBook) {
@@ -95,8 +100,14 @@ function BookDetails({ triggerAlert }) {
         coverImage: coverUrl
       };
 
+      const headers = {};
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       // UPDATED: Used ${API_BASE_URL}
-      const res = await axios.post(`${API_BASE_URL}/api/bookshelf/add`, payload, { withCredentials: true });
+      const res = await axios.post(`${API_BASE_URL}/api/bookshelf/add`, payload, { headers, withCredentials: true });
       return res.data._id; 
     } catch (err) {
       if (err.response?.status === 401) {
@@ -137,6 +148,9 @@ function BookDetails({ triggerAlert }) {
       }
 
       await axios.put(`${API_BASE_URL}/api/bookshelf/${currentId}`, diaryForm, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken') || ''}`.trim()
+        },
         withCredentials: true
       });
 
